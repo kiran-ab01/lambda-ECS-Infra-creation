@@ -21,7 +21,7 @@ data "aws_subnets" "default_vpc_subnets" {
 # Security Group (for HTTP)
 # ------------------------
 resource "aws_security_group" "ecs_sg" {
-  name        = "ecs-sg"
+  name        = "ecs-sg_new"
   description = "Allow HTTP"
   vpc_id      = data.aws_vpc.default.id
  
