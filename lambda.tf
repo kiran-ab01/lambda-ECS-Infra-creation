@@ -4,7 +4,7 @@ provider "aws" {
  
 # IAM Role for Lambda
 resource "aws_iam_role" "lambda_exec" {
-  name = "basic_lambda_exec_role_02"  # <- Updated name
+  name = "basic_lambda_exec_role_03"  # <- Updated name
  
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
