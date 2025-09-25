@@ -1,12 +1,8 @@
-
- 
-# ------------------------
-# Data source: Default VPC
 # ------------------------
 data "aws_vpc" "default" {
   default = true
 }
- 
+
 # ------------------------
 # Data source: Subnets in default VPC
 # ------------------------
@@ -16,19 +12,28 @@ data "aws_subnets" "default_vpc_subnets" {
     values = [data.aws_vpc.default.id]
   }
 }
- 
-# ------------------------
-# Security Group (for HTTP)
-# ------------------------
 
- 
+# ------------------------
+# Data source: Default Security Group in default VPC
+# ------------------------
+data "aws_security_group" "default" {
+  filter {
+    name   = "group-name"
+    values = ["default"]
+  }
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
 # ------------------------
 # ECS Cluster
 # ------------------------
 resource "aws_ecs_cluster" "my_cluster" {
   name = "simple-ecs-cluster"
 }
- 
+
 # ------------------------
 # ECS Task Definition
 # ------------------------
@@ -38,7 +43,7 @@ resource "aws_ecs_task_definition" "my_task" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
- 
+
   container_definitions = jsonencode([
     {
       name      = "nginx"
@@ -52,7 +57,7 @@ resource "aws_ecs_task_definition" "my_task" {
     }
   ])
 }
- 
+
 # ------------------------
 # ECS Service
 # ------------------------
@@ -62,10 +67,10 @@ resource "aws_ecs_service" "my_service" {
   task_definition = aws_ecs_task_definition.my_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
- 
+
   network_configuration {
     subnets          = data.aws_subnets.default_vpc_subnets.ids
     assign_public_ip = true
-    security_groups  = [aws_security_group.ecs_sg.id]
+    security_groups  = [data.aws_security_group.default.id]
   }
 }
