@@ -1,7 +1,4 @@
-main.tf
-provider "aws" {
-  region = "eu-north-1"
-}
+
  
 # ------------------------
 # Data source: Default VPC
